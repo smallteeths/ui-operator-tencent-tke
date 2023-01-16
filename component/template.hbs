@@ -1,0 +1,850 @@
+{{#accordion-list
+  showExpandAll=false
+  as | al expandFn |
+}}
+  {{#accordion-list-item
+    title=(t "clusterNew.tencenttke.access.title")
+    detail=(t "clusterNew.tencenttke.access.detail")
+    expandAll=expandAll
+    expand=(action expandFn)
+    expandOnInit=true
+  }}
+    {{#if (eq step 1)}}
+      {{form-auth-cloud-credential
+        cloudCredentials=cloudCredentials
+        driverName=cloudCredentialDriverName
+        parseAndCollectErrors=(action "errorHandler")
+        finishAndSelectCloudCredential=(action "finishAndSelectCloudCredential")
+        primaryResource=primaryResource
+        region=config.region
+        hideSave=true
+      }}
+    {{else}}
+      <div class="row">
+        <div class="col span-4">
+          <label class="acc-label">
+            {{t "formAuthCloudCredential.label"}}
+          </label>
+          <div>
+            {{selectedCloudCredential.displayName}}
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  {{/accordion-list-item}}
+  {{#if (eq step 1)}}
+    {{#if (not nodePoolActive)}}
+      {{banner-message
+        color="bg-error mb-0 mt-10"
+        message=(t "clusterNew.tencenttke.access.nodePoolUpdateError")
+      }}
+    {{/if}}
+    {{save-cancel
+      editing=(eq mode "edit")
+      save=(action "tencentLogin")
+      cancel=close
+      createLabel="clusterNew.tencenttke.access.next"
+      savingLabel="clusterNew.tencenttke.access.loading"
+      saveDisabled=(or (not primaryResource.cloudCredentialId) (not nodePoolActive) (and (not isNew) (not isActive)))
+    }}
+  {{/if}}
+  {{#if (and isNew isImportProvider)}}
+    {{#if (eq step 1.5)}}
+      {{#accordion-list-item
+        title=(t "clusterNew.tencenttke.clusterSelect.title")
+        detail=(t "clusterNew.tencenttke.clusterSelect.detail")
+        showExpand=false
+        expandOnInit=true
+        expandAll=al.expandAll
+        expand=(action expandFn)
+      }}
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.region.label"}}
+            </label>
+            {{#input-or-display
+              editable=(and isNew (eq step 1.5))
+              value=showRegion
+            }}
+              {{new-select
+                class="form-control"
+                content=regionChoices
+                value=config.region
+                localizedLabel=true
+              }}
+            {{/input-or-display}}
+          </div>
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.clusterSelect.importCluster"}}
+            </label>
+            {{#input-or-display
+              editable=(and isNew (eq step 1.5))
+              value=showImportCluster
+            }}
+              {{new-select
+                class="form-control"
+                content=clusterChoices
+                value=config.clusterId
+                disabled=(not (and clusterChoices clusterChoices.length))
+                placeholder=(t "clusterNew.tencenttke.clusterSelect.placeholder")
+              }}
+            {{/input-or-display}}
+          </div>
+        </div>
+      {{/accordion-list-item }}
+      {{save-cancel
+        editing=(eq mode "edit")
+        save=(action "registerCluster")
+        cancel=close
+      }}
+    {{/if}}
+  {{/if}}
+  {{#if (gte step 2)}}
+    {{#accordion-list-item
+      title=(t "clusterNew.tencenttke.cluster.title")
+      detail=(t "clusterNew.tencenttke.cluster.detail")
+      showExpand=false
+      expandOnInit=true
+      expandAll=al.expandAll
+      expand=(action expandFn)
+    }}
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.region.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=regionShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              localizedLabel=true
+              content=regionChoices
+              value=config.region
+            }}
+          {{/input-or-display}}
+        </div>
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.container.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=config.container
+          }}
+            {{searchable-select
+            class="form-control"
+            content=containerChoices
+            value=config.container
+          }}
+          {{/input-or-display}}
+          
+        </div>
+      </div>
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.clusterType.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=clusterTypeShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=clusterTypeChoices
+              value=config.clusterType
+              localizedLabel=true
+            }}
+          {{/input-or-display}}
+        </div>
+        {{#if (eq config.clusterType 'MANAGED_CLUSTER')}}
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.clusterLevel.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2))
+            value=config.clusterLevel
+          }}
+            {{searchable-select
+              class="form-control"
+              content=clusterLevelChoices
+              value=config.clusterLevel
+            }}
+          {{/input-or-display}}
+        </div>
+        {{/if}}
+      </div>
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.version.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=config.clusterVersion
+          }}
+            {{searchable-select
+              class="form-control"
+              content=versionChoices
+              value=config.clusterVersion
+            }}
+          {{/input-or-display}}
+        </div>
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.zone.label"}}
+            {{field-required}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=zoneShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=zoneChoices
+              value=config.zoneId
+            }}
+          {{/input-or-display}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.vpc.label"}}
+            {{field-required}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=vpcShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=vpcChoices
+              value=config.vpcId
+            }}
+          {{/input-or-display}}
+        </div>
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.subnet.label"}}
+            {{field-required}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=subnetShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=subnetChoices
+              value=config.subnetId
+            }}
+          {{/input-or-display}}
+        </div>
+      </div>
+      {{#if (and kubernetesVersionDisabled isNew) }}
+        {{#banner-message color="bg-warning"}}
+          <p>
+            {{t "clusterNew.tencenttke.version.warning" version=config.clusterVersion}}
+            <a href="https://www.suse.com/suse-rancher/support-matrix/all-supported-versions/rancher-v2-6-9/" target="_blank">{{t "clusterNew.tencenttke.version.warningTip"}}</a>
+          </p>
+        {{/banner-message}}
+      {{/if}}
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.os.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=osShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=osChoices
+              value=config.osName
+            }}
+          {{/input-or-display}}
+        </div>
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.clusterCidr.label"}}
+            {{field-required}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=config.clusterCidr
+          }}
+            {{input
+              type="text"
+              value=config.clusterCidr
+              placeholder=(t "clusterNew.tencenttke.clusterCidr.placeholder")
+            }}
+          {{/input-or-display}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.securityGroup.label"}}
+            {{field-required}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=securityGroupShowValue
+          }}
+            {{searchable-select
+              class="form-control"
+              content=securityGroupChoices
+              value=config.securityGroup
+            }}
+          {{/input-or-display}}
+        </div>
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.ipvs.label"}}
+          </label>
+          {{#if (and (eq step 2) isNew)}}
+            <div class="checkbox" style="margin-top: 8px;">
+              <label>
+                {{input
+                  type="checkbox"
+                  checked=config.ipvs
+                }}
+                {{t "clusterNew.tencenttke.ipvs.enabled"}}
+                <span class="text-small">
+                  ({{t "clusterNew.tencenttke.ipvs.help"}})
+                </span>
+              </label>
+            </div>
+          {{else}}
+            <div>{{config.ipvs}}</div>
+          {{/if}}
+        </div>
+      </div>
+      {{!-- {{#if (not isImportProvider)}}
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">
+            {{t "clusterNew.tencenttke.component.label"}}
+          </label>
+          {{#input-or-display
+            editable=(and (eq step 2) isNew)
+            value=componentShowValue
+          }}
+            {{input
+              type="text"
+              value=config.component
+            }}
+          {{/input-or-display}}
+        </div>
+      </div>
+      {{/if}} --}}
+    {{/accordion-list-item}}
+    {{#if (eq step 2)}}
+      {{save-cancel
+        editing=(eq mode "edit")
+        save=(action "loadNodeConfig")
+        cancel=close
+        createLabel="clusterNew.tencenttke.node.next"
+        savingLabel="clusterNew.tencenttke.node.loading"
+      }}
+    {{/if}}
+  {{/if}}
+  {{#if (and (gte step 3) (eq config.clusterType 'INDEPENDENT_CLUSTER') (not isImportProvider))}}
+    {{#accordion-list-item
+      title=(t "clusterNew.tencenttke.master.title")
+      detail=(t "clusterNew.tencenttke.master.detail")
+      showExpand=false
+      expandOnInit=true
+      expandAll=al.expandAll
+      expand=(action expandFn)
+    }}
+      <div>
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.instanceType.label"}}
+              {{field-required}}
+            </label>
+            {{#input-or-display
+              editable=(and (eq step 3) isNew)
+              value=instanceTypeShowValue
+            }}
+              {{searchable-select
+                class="form-control"
+                content=instanceChoices
+                value=config.instanceType
+              }}
+            {{/input-or-display}}
+          </div>
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.ecsCount.label"}}
+              {{field-required}}
+            </label>
+            {{#input-or-display
+              editable=(and (eq step 3) isNew)
+              value=config.ecsCount
+            }}
+              {{input-integer
+                min=3
+                max=500
+                value=config.ecsCount
+                classNames="form-control"
+                placeholder=(t "clusterNew.tencenttke.ecsCount.placeholder")
+              }}
+            {{/input-or-display}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.systemDiskType.label"}}
+            </label>
+            {{#input-or-display
+              editable=(and (eq step 3) isNew)
+              value=systemDiskTypeShowValue
+            }}
+              {{searchable-select
+                class="form-control"
+                content=systemDiskChoices
+                localizedLabel=true
+                value=config.systemDiskType
+              }}
+            {{/input-or-display}}
+          </div>
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.systemDiskSize.label"}}
+            </label>
+            <div class="input-group">
+              {{#input-or-display
+                editable=(and (eq step 3) isNew)
+                value=config.systemDiskSize
+              }}
+                {{input-integer
+                  min=minSystemDiskSize
+                  max=maxSystemDiskSize
+                  value=config.systemDiskSize
+                  classNames="form-control"
+                  placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                }}
+              {{/input-or-display}}
+              <span class="input-group-addon bg-default">
+                {{t "generic.gigabyte"}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.dataDiskType.label"}}
+            </label>
+            {{#input-or-display
+              editable=(and (eq step 3) isNew)
+              value=dataDiskTypeShowValue
+            }}
+              {{searchable-select
+                class="form-control"
+                content=dataDiskChoices
+                localizedLabel=true
+                value=config.dataDiskType
+              }}
+            {{/input-or-display}}
+          </div>
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.dataDiskSize.label"}}
+            </label>
+            <div class="input-group">
+              {{#input-or-display
+                editable=(and (eq step 3) isNew)
+                value=config.dataDiskSize
+              }}
+                {{input-integer
+                  min=minDataDiskSize
+                  max=maxDataDiskSize
+                  value=config.dataDiskSize
+                  classNames="form-control"
+                  placeholder=(t "clusterNew.tencenttke.dataDiskSize.placeholder")
+                }}
+              {{/input-or-display}}
+              <span class="input-group-addon bg-default">
+                {{t "generic.gigabyte"}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.bandwidthType.label"}}
+            </label>
+            {{#input-or-display
+              editable=(and (eq step 3) isNew)
+              value=bandwidthTypeShowValue
+            }}
+              {{searchable-select
+                class="form-control"
+                content=bandWidthChoices
+                localizedLabel=true
+                value=config.bandwidthType
+              }}
+            {{/input-or-display}}
+          </div>
+          <div class="col span-6">
+            <label class="acc-label">
+              {{t "clusterNew.tencenttke.bandwidth.label"}}
+            </label>
+            <div class="input-group">
+              {{#input-or-display
+                editable=(and (eq step 3) isNew)
+                value=config.bandwidth
+              }}
+                {{input-integer
+                  min=0
+                  max=100
+                  value=config.bandwidth
+                  classNames="form-control"
+                  placeholder=(t "clusterNew.tencenttke.bandwidth.placeholder")
+                }}
+              {{/input-or-display}}
+              <span class="input-group-addon bg-default">
+                {{t "generic.mbps"}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.keyPair.label"}}{{field-required}}
+              </label>
+              {{#input-or-display
+                editable=(and (eq step 3) isNew)
+                value=keyPairShowValue
+              }}
+                {{new-select
+                  class="form-control"
+                  content=keyChoices
+                  value=config.keyPair
+                }}
+              {{/input-or-display}}
+            </div>
+          </div>
+      </div>
+    {{/accordion-list-item}}
+    {{#if (eq step 3)}}
+    {{save-cancel
+      editing=(eq mode "edit")
+      save=(action "loadWorkerConfig")
+      cancel=close
+      createLabel="clusterNew.tencenttke.master.next"
+      savingLabel="clusterNew.tencenttke.master.loading"
+      saveDisabled=(or (not primaryResource.cloudCredentialId) (not nodePoolActive))
+    }}
+    {{/if}}
+  {{/if}}
+
+  {{#if (gte step 4)}}
+    {{#accordion-list-item
+      title=(t "clusterNew.tencenttke.worker.title")
+       detail=(t "clusterNew.tencenttke.worker.detail")
+       showExpand=false
+       expandOnInit=true
+       expandAll=al.expandAll
+       expand=(action expandFn)
+    }}
+      {{#each nodePoolList as |nodePool index|}}
+        <div class="box mb-10">
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.nodePoolName.label"}}{{field-required}}
+              </label>
+              {{input type="text"
+                name="nodePoolName"
+                classNames="form-control"
+                placeholder=(t "clusterNew.tencenttke.nodePoolName.placeholder")
+                value=nodePool.nodePoolName
+              }}
+            </div>
+            <div class="pull-right">
+              <button
+                style="background:transparent"
+                class="btn bg-transparent text-small vertical-middle"
+                type="button"
+                disabled={{eq nodePoolList.length 1}}
+                {{action 'removeNodePool' nodePool}}
+              >
+                {{t "nodeGroupRow.remove.label"}}
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.instanceType.label"}}{{field-required}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displayInstanceType
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=instanceChoices
+                  value=nodePool.instanceType
+                }}
+              {{/input-or-display}}
+              
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.numOfNodes.label"}}
+              </label>
+              {{input-integer
+                min=1
+                max=300
+                value=nodePool.instanceNum
+                classNames="form-control"
+                placeholder=(t "clusterNew.tencenttke.numOfNodes.placeholder")
+              }}
+              <p class="help-block">
+                {{t "clusterNew.tencenttke.numOfNodes.help"}}
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.systemDiskType.label"}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displaySystemDiskType
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=nodePool.systemDiskTypes
+                  localizedLabel=true
+                  value=nodePool.systemDiskType
+                }}
+              {{/input-or-display}}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.systemDiskSize.label"}}
+              </label>
+              {{#if (or (not nodePool.nodePoolId) isNew)}}
+                <div class="input-group">
+                  {{input-integer
+                    min=20
+                    max=1024
+                    value=nodePool.systemDiskSize
+                    classNames="form-control"
+                    placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                  }}
+                  <span class="input-group-addon bg-default">
+                    {{t "generic.gigabyte"}}
+                  </span>
+                </div>
+              {{else}}
+                <div>{{nodePool.systemDiskSize}} {{t "generic.gigabyte"}}</div>
+              {{/if}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.dataDiskType.label"}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displayDataDiskType
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=nodePool.dataDiskTypes
+                  localizedLabel=true
+                  value=nodePool.dataDiskType
+                }}
+              {{/input-or-display}}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.dataDiskSize.label"}}
+              </label>
+                <div class="input-group">
+                  {{#input-or-display
+                    editable=(or (not nodePool.nodePoolId) isNew)
+                    value=nodePool.dataDiskSize
+                  }}
+                    {{input-integer
+                      min=0
+                      max=32000
+                      value=nodePool.dataDiskSize
+                      classNames="form-control"
+                      placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                    }}
+                  {{/input-or-display}}
+                  <span class="input-group-addon bg-default">
+                    {{t "generic.gigabyte"}}
+                  </span>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.os.label"}}{{field-required}}
+              </label>
+              {{new-select
+                classNames="form-control"
+                content=osChoices
+                value=nodePool.osName
+              }}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.subnet.label"}}
+                {{field-required}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displaySubnetId
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=subnetChoices
+                  value=nodePool.subnetId
+                }}
+              {{/input-or-display}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.bandwidthType.label"}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displayBandwidthType
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=bandWidthChoices
+                  localizedLabel=true
+                  value=nodePool.bandwidthType
+                }}
+              {{/input-or-display}}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.bandwidth.label"}}
+              </label>
+              <div class="input-group">
+                {{#input-or-display
+                  editable=(or (not nodePool.nodePoolId) isNew)
+                  value=nodePool.bandwidth
+                }}
+                  {{input-integer
+                    min=0
+                    max=100
+                    value=nodePool.bandwidth
+                    classNames="form-control"
+                    placeholder=(t "clusterNew.tencenttke.bandwidth.placeholder")
+                  }}
+                {{/input-or-display}}
+                <span class="input-group-addon bg-default">
+                  {{t "generic.mbps"}}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.keyPair.label"}}{{field-required}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displayKeyPair
+              }}
+                {{new-select
+                  class="form-control"
+                  content=keyChoices
+                  value=nodePool.keyPair
+                }}
+              {{/input-or-display}}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.tencenttke.securityGroup.label"}}
+                {{field-required}}
+              </label>
+              {{#input-or-display
+                editable=(or (not nodePool.nodePoolId) isNew)
+                value=nodePool.displaySecurityGroup
+              }}
+                {{searchable-select
+                  class="form-control"
+                  content=securityGroupChoices
+                  value=nodePool.securityGroup
+                }}
+              {{/input-or-display}}
+            </div>
+          </div>
+        </div>
+      {{else}}
+        <div class="p-20">
+          {{t "clusterNew.tencenttke.nodeGroups.noNodes"}}
+        </div>
+      {{/each}}
+
+      {{#unless isImportProvider}}
+        <div class="row mt-15">
+          <button
+            class="btn bg-link icon-btn pull-left"
+            type="button"
+            disabled={{not instanceChoices.length}}
+            {{action "addNodePool"}}
+          >
+            <i class="icon icon-plus text-small"></i>
+            <span>
+              {{t "clusterNew.tencenttke.nodeGroups.addLabel"}}
+            </span>
+          </button>
+        </div>
+      {{/unless}}
+    {{/accordion-list-item}}
+    {{#if isImportProvider}}
+      <div class="text-center pt-20 pb-20">
+        <button class="btn-large btn bg-transparent outline-primary" type="button" {{action "cancel"}}>
+          {{t "saveCancel.cancel"}}
+        </button>
+      </div>
+    {{else}}
+      {{save-cancel
+        editing=(eq mode "edit")
+        save=(action "save")
+        cancel=close
+      }}
+    {{/if}}
+  {{/if}}
+
+  {{top-errors
+    errors=errors
+  }}
+  {{top-errors
+    errors=otherErrors
+  }}
+  {{top-errors
+    errors=clusterErrors
+  }}
+{{/accordion-list}}

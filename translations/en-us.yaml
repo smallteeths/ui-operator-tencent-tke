@@ -1,0 +1,162 @@
+clusterNew:
+  tencenttke:
+    label: Tencent Kubernetes Engine
+    shortLabel: Tencent TKE
+    access:
+      next: "Next: Configure Cluster"
+      loading: "Loading Configure Cluster Infos from Tencent Cloud"
+      title: Account Access
+      detail: Choose the region and API Key that will be used to launch Tencent Kubernetes Service
+      nodePoolUpdateError: The node pool is being created and cannot be upgraded. Please try again later.
+    cluster:
+      title: Cluster Configuration
+      detail: Choose the VPC and Kubernetes version that will be used to launch Tencent Kubernetes Service
+      next: "Next: Select Instance Type"
+      loading: "Loading Availability Zones from Tencent Cloud"
+      name:
+        required: Cluster name is required
+    ipvs:
+      label: Support IPVS
+      enabled: Enabled
+      help: IPVS is suitable for providing better forwarding performance in large-scale scenarios. Note that once selected, changes are not supported.
+    container:
+      label: Runtime Components
+    clusterSelect:
+      title: Select Cluster
+      detail: Select the TKE cluster to register
+      next: Register cluster
+      importCluster: Cluster
+      required: The cluster to be imported must be set
+      placeholder: Please select
+    clusterType:
+      label: Cluster Type
+      independent: Independent Cluster
+      managed: Managed Cluster
+    clusterLevel:
+      label: Cluster Level
+      help: "{level} (At most {node} nodes, {pod} pods, {configMap} ConfigMaps, {crd} CRDs can be managed)"
+    master:
+      title: Master Nodes
+      detail: Configure the master nodes that will be used to launch Tencent Kubernetes Service
+      next: "Next: Configure Worker Nodes"
+      loading: "Loading Key Pairs from Tencent"
+    worker:
+      title: Worker Nodes
+      detail: Configure the worker nodes that will be used to launch Tencent Kubernetes Service
+      required: Worker Nodes is required
+    ecsCount:
+      label: Number of ECS
+      placeholder: '1-500'
+    nodeGroups:
+      addLabel: Add Node Group
+      detail: Customize managed node groups.
+      noNodes: No Node Groups
+      title: Managed Node Groups
+    nodePoolName:
+      label: Nood Pool Name
+      placeholder: e.g. nodepool
+      required: Worker Node Name is required
+    numOfNodes:
+      label: Worker Nodes Count
+      placeholder: e.g. 3
+      required: Worker Nodes Count is required
+      help: The count of worker nodes will be launched in this Kubernetes cluster
+    component:
+      label: Component configuration
+    node:
+      title: Instance Type
+      detail: Choose the instance type that will be used to launch Tencent Kubernetes Service
+      next: "Next: Configure Instance"
+      loading: "Loading configuration from Tencent Cloud"
+    instance:
+      title: Instance Configuration
+      detail: Configure the instance that will be used to launch Tencent Kubernetes Service
+    subnet:
+      label: Subnet
+      required: Subnet is required
+    os:
+      label: Operating System
+    disk:
+      LOCAL_BASIC: Local Basic
+      LOCAL_SSD: Local SSD
+      CLOUD_BASIC: Cloud Basic
+      CLOUD_PREMIUM: Cloud Premium
+      CLOUD_SSD: Cloud SSD
+      CLOUD_BSSD: CLOUD BSSD
+    systemDiskSize:
+      label: Root Disk Size
+      placeholder: e.g. 25
+    systemDiskType:
+      label: Root Disk Type
+    dataDiskType:
+      label: Data Disk Type
+    dataDiskSize:
+      label: Data Disk Size
+      placeholder: e.g. 10
+    bandwidth:
+      label: Band Width
+      placeholder: e.g. 10
+    nodeCount:
+      label: Node Count
+      placeholder: e.g. 3
+      required: Node Count is required
+      help: The count of nodes will be launched in this Kubernetes cluster
+    bandwidthType:
+      label: Band Width Type
+      bandwidth: Pay By Bandwidth
+      traffic: Pay By Traffic
+    keyPair:
+      label: Key Pair
+      required: Key Pair is required
+    region:
+      label: Region
+    secretId:
+      label: Secret ID
+      placeholder: Your Tencent Cloud secret id
+      required: Secret ID is required
+    secretKey:
+      label: Secret Key
+      placeholder: Your Tencent Cloud secret key
+      provided: Provided
+      required: Secret Key is required
+    securityGroup:
+      label: Security Group
+      required: Security Group is required
+    vpc:
+      label: VPC
+      required: VPC is required
+    version:
+      label: Kubernetes Version
+      warning: “{version}”，This version is not supported by Rancher. Reference
+      warningTip: Rancher support matrix.
+    clusterCidr:
+      label: Container Network CIDR
+      placeholder: e.g. 172.16.0.0/16
+      required: Container Network CIDR is required
+      formatError: Container Network CIDR format error
+    zone:
+      label: Availability Zone
+      required: Availability Zone is required
+    instanceType:
+      label: Instance Type
+      required: Instance Type is required
+    regions:
+      ap-guangzhou: Guangzhou
+      ap-shanghai: Shanghai
+      ap-beijing: Beijing
+      ap-chengdu: Chengdu
+      ap-chongqing: Chongqing
+      ap-nanjing: Nanjing
+      ap-hongkong: Hong Kong
+      ap-singapore: Singapore
+      na-toronto: Toronto
+      ap-bangkok: Bangkok
+      ap-mumbai: Mumbai
+      ap-seoul: Seoul
+      ap-tokyo: Tokyo
+      na-siliconvalley: Silicon Valley
+      na-ashburn: Virginia
+      eu-frankfurt: Frankfurt
+      eu-moscow: Moscow
+      ap-jakarta: Jakarta
+      sa-saopaulo: Saopaulo

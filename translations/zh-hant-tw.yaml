@@ -1,0 +1,162 @@
+clusterNew:
+  tencenttke:
+    label: 騰訊雲Kubernetes服務
+    shortLabel: Tencent TKE
+    access:
+      next: '下一步: 配置叢集'
+      loading: '從騰訊雲獲取配置叢集信息'
+      title: 賬戶認證
+      detail: 選擇騰訊雲Kubernetes服務所使用的區域
+      nodePoolUpdateError: 節點池正在創建中，無法升級，請稍後再試。
+    cluster:
+      title: 叢集配置
+      detail: 選擇騰訊雲Kubernetes服務中使用的VPC和版本
+      next: '下一步: 選擇主機類型'
+      loading: '從騰訊雲獲取可用區信息'
+      name:
+        required: 請輸入叢集名稱
+    ipvs:
+      label: ipvs 支持
+      enabled: 啟用
+      help: IPVS適用於大規模場景下提供更優的轉發性能。注意一經選擇將不支持更改。
+    container:
+      label: 運行時組件
+    clusterSelect:
+      title: 選擇集群
+      detail: 選擇要註冊的 TKE 集群
+      next: 註冊集群
+      importCluster: 集群
+      required: 必須設置需要導入的集群
+      placeholder: '請選擇'
+    clusterType:
+      label: 集群類型
+      independent: 獨立集群
+      managed: 託管集群
+    clusterLevel:
+      label: 集群規格
+      help: '{level} (最多管理{node}個節點，{pod}個 Pod，{configMap}個 ConfigMap，{crd}個 CRD)'
+    master:
+      title: Master&Etcd 節點配置
+      detail: 配置用於啟動騰訊雲 Kubernetes 服務的主節點
+      next: '下一步: 配置Worker節點'
+      loading: '從騰訊雲加載磁盤類型'
+    worker:
+      title: Worker 節點配置
+      detail: 配置用於啟動騰訊雲 Kubernetes 服務的工作節點
+      required: Worker 節點必須配置
+    ecsCount:
+      label: 雲服務器數量
+      placeholder: '1-500'
+    nodeGroups:
+      title: 管理節點組
+      detail: 自定義管理節點組
+      addLabel: 添加機型
+      noNodes: 沒有節點組
+    nodePoolName:
+      label: 節點池名稱
+      placeholder: 例如：nodepool
+      required: 必須設置 worker 節點池名稱
+    numOfNodes:
+      label: Worker 節點數
+      placeholder: '例如: 3'
+      required: 必須設置Worker節點
+      help: 此Kubernetes集群將運行的Worker節點數
+    component:
+      label: 組件配置
+    node:
+      title: 主機類型
+      detail: 選擇騰訊雲Kubernetes服務中使用的主機類型
+      next: '下一步: 配置節點'
+      loading: '從騰訊雲獲取節點配置信息'
+    instance:
+      title: 節點配置
+      detail: 配置騰訊雲Kubernetes服務中的節點
+    subnet:
+      label: 子網
+      required: 請選擇子網
+    os:
+      label: 操作系統
+    disk:
+      LOCAL_BASIC: 本地硬盤
+      LOCAL_SSD: 本地 SSD 硬盤
+      CLOUD_BASIC: 普通雲硬盤
+      CLOUD_PREMIUM: 高性能雲硬盤
+      CLOUD_SSD: SSD 雲硬盤
+      CLOUD_BSSD: 通用性 SSD 雲硬盤
+    systemDiskSize:
+      label: 系統盤大小
+      placeholder: '例如: 25'
+    systemDiskType:
+      label: 系統盤類型
+    dataDiskType:
+      label: 數據盤類型
+    dataDiskSize:
+      label: 數據盤大小
+      placeholder: '例如: 10'
+    bandwidth:
+      label: 帶寬
+      placeholder: '例如: 10'
+    nodeCount:
+      label: 節點數量
+      placeholder: '例如: 3'
+      required: 請輸入節點數量
+      help: 將要創建的騰訊雲Kubernetes服務中所含有的節點數量
+    bandwidthType:
+      label: 帶寬類型
+      bandwidth: 按帶寬計費
+      traffic: 按使用流量計費
+    keyPair:
+      label: 密鑰
+      required: 請選擇密鑰
+    region:
+      label: 區域
+    secretId:
+      label: 密鑰ID
+      placeholder: 您的騰訊雲API密鑰ID
+      required: 請輸入密鑰ID
+    secretKey:
+      label: 密鑰
+      placeholder: 您的騰訊雲API密鑰
+      provided: 已提供
+      required: 請輸入密鑰
+    securityGroup:
+      label: 安全組
+      required: 請選擇安全組
+    vpc:
+      label: VPC
+      required: 請選擇VPC
+    version:
+      label: Kubernetes版本
+      warning: “{version}”，此版本不在 Rancher 支持矩陣範圍內。可參考
+      warningTip: Rancher 支持矩陣。
+    clusterCidr:
+      label: 容器網路 CIDR
+      placeholder: '例如: 172.16.0.0/16'
+      required: 請輸入容器網路的CIDR
+      formatError: 容器網路 CIDR 格式錯誤
+    zone:
+      label: 可用區
+      required: 請選擇可用區
+    instanceType:
+      label: 實例類型
+      required: 請選擇實例類型
+    regions:
+      ap-guangzhou: 廣州
+      ap-shanghai: 上海
+      ap-beijing: 北京
+      ap-chengdu: 成都
+      ap-chongqing: 重慶
+      ap-nanjing: 南京
+      ap-hongkong: 香港
+      ap-singapore: 新加坡
+      na-toronto: 多倫多
+      ap-bangkok: 曼谷
+      ap-mumbai: 孟買
+      ap-seoul: 首爾
+      ap-tokyo: 東京
+      na-siliconvalley: 矽谷
+      na-ashburn: 弗吉尼亞
+      eu-frankfurt: 法蘭克福
+      eu-moscow: 莫斯科
+      ap-jakarta: 雅加達
+      sa-saopaulo: 聖保羅

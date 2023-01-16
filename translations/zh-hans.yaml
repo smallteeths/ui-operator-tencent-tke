@@ -1,0 +1,162 @@
+clusterNew:
+  tencenttke:
+    label: 腾讯云Kubernetes服务
+    shortLabel: Tencent TKE
+    access:
+      next: '下一步: 配置集群'
+      loading: '从腾讯云获取集群配置信息'
+      title: 账户认证
+      detail: 选择腾讯云Kubernetes服务所使用的区域
+      nodePoolUpdateError: 节点池正在创建中，无法升级，请稍后再试。
+    cluster:
+      title: 集群配置
+      detail: 选择腾讯云Kubernetes服务中使用的VPC和版本
+      next: '下一步: 选择主机类型'
+      loading: '从腾讯云获取可用区信息'
+      name:
+        required: 请输入集群名称
+    ipvs:
+      label: ipvs 支持
+      enabled: 启用
+      help: IPVS适用于大规模场景下提供更优的转发性能。注意一经选择将不支持更改。
+    container:
+      label: 运行时组件
+    clusterSelect:
+      title: 选择集群
+      detail: 选择要注册的 TKE 集群
+      next: 注册集群
+      importCluster: 集群
+      required: 必须设置需要导入的集群
+      placeholder: '请选择'
+    clusterType:
+      label: 集群类型
+      independent: 独立集群
+      managed: 托管集群
+    clusterLevel:
+      label: 集群规格
+      help: "{level} (最多管理{node}个节点，{pod}个 Pod，{configMap}个 ConfigMap，{crd}个 CRD)"
+    master:
+      title: Master&Etcd 节点配置
+      detail: 配置用于启动腾讯云 Kubernetes 服务的主节点
+      next: '下一步: 配置Worker节点'
+      loading: '从腾讯云加载磁盘类型'
+    worker:
+      title: Worker 节点配置
+      detail: 配置用于启动腾讯云 Kubernetes 服务的工作节点
+      required: Worker 节点必须配置
+    ecsCount:
+      label: 云服务器数量
+      placeholder: '1-500'
+    nodeGroups:
+      title: 管理节点组
+      detail: 自定义管理节点组
+      addLabel: 添加机型
+      noNodes: 没有节点组
+    nodePoolName:
+      label: 节点池名称
+      placeholder: 例如：nodepool
+      required: 必须设置 worker 节点池名称
+    numOfNodes:
+      label: Worker 节点数
+      placeholder: '例如: 3'
+      required: 必须设置Worker节点
+      help: 此Kubernetes集群将运行的Worker节点数
+    component:
+      label: 组件配置
+    node:
+      title: 主机类型
+      detail: 选择腾讯云Kubernetes服务中使用的主机类型
+      next: '下一步: 配置节点'
+      loading: '从腾讯云获取节点配置信息'
+    instance:
+      title: 节点配置
+      detail: 配置腾讯云Kubernetes服务中的节点
+    subnet:
+      label: 子网
+      required: 请选择子网
+    os:
+      label: 操作系统
+    disk:
+      LOCAL_BASIC: 本地硬盘
+      LOCAL_SSD: 本地SSD硬盘
+      CLOUD_BASIC: 普通云硬盘
+      CLOUD_PREMIUM: 高性能云硬盘
+      CLOUD_SSD: SSD云硬盘
+      CLOUD_BSSD: 通用性SSD云硬盘
+    systemDiskSize:
+      label: 系统盘大小
+      placeholder: '例如: 25'
+    systemDiskType:
+      label: 系统盘类型
+    dataDiskType:
+      label: 数据盘类型
+    dataDiskSize:
+      label: 数据盘大小
+      placeholder: '例如: 10'
+    bandwidth:
+      label: 带宽
+      placeholder: '例如: 10'
+    nodeCount:
+      label: 节点数量
+      placeholder: '例如: 3'
+      required: 请输入节点数量
+      help: 将要创建的腾讯云Kubernetes服务中所含有的节点数量
+    bandwidthType:
+      label: 带宽类型
+      bandwidth: 按带宽计费
+      traffic: 按使用流量计费
+    keyPair:
+      label: 密钥
+      required: 请选择密钥
+    region:
+      label: 区域
+    secretId:
+      label: 密钥ID
+      placeholder: 您的腾讯云API密钥ID
+      required: 请输入密钥ID
+    secretKey:
+      label: 密钥
+      placeholder: 您的腾讯云API密钥
+      provided: 已提供
+      required: 请输入密钥
+    securityGroup:
+      label: 安全组
+      required: 请选择安全组
+    vpc:
+      label: VPC
+      required: 请选择VPC
+    version:
+      label: Kubernetes版本
+      warning: “{version}”，此版本不在 Rancher 支持矩阵范围内。可参考
+      warningTip: Rancher 支持矩阵。
+    clusterCidr:
+      label: 容器网络 CIDR
+      placeholder: '例如: 172.16.0.0/16'
+      required: 请输入容器网络的CIDR
+      formatError: 容器网络 CIDR 格式错误
+    zone:
+      label: 可用区
+      required: 请选择可用区
+    instanceType:
+      label: 实例类型
+      required: 请选择实例类型
+    regions:
+      ap-guangzhou: 广州
+      ap-shanghai: 上海
+      ap-beijing: 北京
+      ap-chengdu: 成都
+      ap-chongqing: 重庆
+      ap-nanjing: 南京
+      ap-hongkong: 香港
+      ap-singapore: 新加坡
+      na-toronto: 多伦多
+      ap-bangkok: 曼谷
+      ap-mumbai: 孟买
+      ap-seoul: 首尔
+      ap-tokyo: 东京
+      na-siliconvalley: 硅谷
+      na-ashburn: 弗吉尼亚
+      eu-frankfurt: 法兰克福
+      eu-moscow: 莫斯科
+      ap-jakarta: 雅加达
+      sa-saopaulo: 圣保罗
