@@ -470,7 +470,6 @@ export default Ember.Component.extend(ClusterDriver, {
 
   initConfig(config){
     const intl = get(this, 'intl');
-    set(this, 'originCofing', config);
 
     const nodePool = [];
 
@@ -956,7 +955,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
     set(this, 'osChoices', out.sort((a, b) => a.label > b.label ? -1 : 1));
 
-    this.setDefaultSelected(out, 'cofing.osName');
+    this.setDefaultSelected(out, 'config.osName');
   },
 
   fetchSecurityGroups() {
