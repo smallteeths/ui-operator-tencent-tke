@@ -46,7 +46,7 @@ clusterNew:
       required: Worker 節點必須配置
     ecsCount:
       label: 雲服務器數量
-      placeholder: '1-500'
+      placeholder: '3-500'
     nodeGroups:
       title: 管理節點組
       detail: 自定義管理節點組
@@ -83,16 +83,17 @@ clusterNew:
       CLOUD_PREMIUM: 高性能雲硬盤
       CLOUD_SSD: SSD 雲硬盤
       CLOUD_BSSD: 通用性 SSD 雲硬盤
+      CLOUD_TSSD: TSSD 雲硬盤
+    diskSize:
+      placeholder: 範圍：{min}～{max}
     systemDiskSize:
       label: 系統盤大小
-      placeholder: '例如: 25'
     systemDiskType:
       label: 系統盤類型
     dataDiskType:
       label: 數據盤類型
     dataDiskSize:
       label: 數據盤大小
-      placeholder: '例如: 10'
     bandwidth:
       label: 帶寬
       placeholder: '例如: 10'
@@ -160,3 +161,8 @@ clusterNew:
       eu-moscow: 莫斯科
       ap-jakarta: 雅加達
       sa-saopaulo: 聖保羅
+    proxy:
+      label: 訪問集群 APIServer
+      inner: 內網訪問
+      outer: 外網訪問
+      info: 需要確保準備導入的集群已開啟集群訪問代理，且使用的安全組開放了443端口

@@ -93,6 +93,28 @@
             {{/input-or-display}}
           </div>
         </div>
+        <div class="row">
+          <div class="col span-6">
+            <label class="acc-label">{{t "clusterNew.tencenttke.proxy.label"}}</label>
+            <div class="radio">
+              <label>
+                {{radio-button selection=config.clusterEndpoint value=false}}
+                {{t 'clusterNew.tencenttke.proxy.inner'}}
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                {{radio-button selection=config.clusterEndpoint value=true}}
+                {{t 'clusterNew.tencenttke.proxy.outer'}}
+              </label>
+            </div>
+            {{#banner-message color="bg-warning"}}
+              <p>
+                {{t "clusterNew.tencenttke.proxy.info"}}
+              </p>
+            {{/banner-message}}
+          </div>
+        </div>
       {{/accordion-list-item }}
       {{save-cancel
         editing=(eq mode "edit")
@@ -326,6 +348,26 @@
           {{/if}}
         </div>
       </div>
+      <div class="row">
+        <div class="col span-6">
+          <label class="acc-label">{{t "clusterNew.tencenttke.proxy.label"}}</label>
+          {{#input-or-display 
+            editable=(and (eq step 2) isNew) 
+            value=clusterEndpointShowValue
+          }}
+            <div class="radio">
+              <label>{{radio-button selection=config.clusterEndpoint value=false}} {{t 'clusterNew.tencenttke.proxy.inner'}}</label>
+            </div>
+            <div class="radio">
+              <label>{{radio-button selection=config.clusterEndpoint value=true}} {{t 'clusterNew.tencenttke.proxy.outer'}}</label>
+            </div>
+          {{/input-or-display}}
+        </div>
+      </div>
+
+        
+
+
       {{!-- {{#if (not isImportProvider)}}
       <div class="row">
         <div class="col span-6">
@@ -415,6 +457,7 @@
                 content=systemDiskChoices
                 localizedLabel=true
                 value=config.systemDiskType
+                change=(action "masterSystemDiskChange")
               }}
             {{/input-or-display}}
           </div>
@@ -428,11 +471,11 @@
                 value=config.systemDiskSize
               }}
                 {{input-integer
-                  min=minSystemDiskSize
-                  max=maxSystemDiskSize
+                  min=config.minSystemDiskSize
+                  max=config.maxSystemDiskSize
                   value=config.systemDiskSize
                   classNames="form-control"
-                  placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                  placeholder=(t "clusterNew.tencenttke.diskSize.placeholder" min=config.minSystemDiskSize max=config.maxSystemDiskSize)
                 }}
               {{/input-or-display}}
               <span class="input-group-addon bg-default">
@@ -455,6 +498,7 @@
                 content=dataDiskChoices
                 localizedLabel=true
                 value=config.dataDiskType
+                change=(action "masterDataDiskChange")
               }}
             {{/input-or-display}}
           </div>
@@ -468,11 +512,12 @@
                 value=config.dataDiskSize
               }}
                 {{input-integer
-                  min=minDataDiskSize
-                  max=maxDataDiskSize
+                  min=config.minDataDiskSize
+                  max=config.maxDataDiskSize
                   value=config.dataDiskSize
+                  nullable=true
                   classNames="form-control"
-                  placeholder=(t "clusterNew.tencenttke.dataDiskSize.placeholder")
+                  placeholder=(t "clusterNew.tencenttke.diskSize.placeholder" min=config.minDataDiskSize max=config.maxDataDiskSize)
                 }}
               {{/input-or-display}}
               <span class="input-group-addon bg-default">
@@ -634,6 +679,7 @@
                   content=nodePool.systemDiskTypes
                   localizedLabel=true
                   value=nodePool.systemDiskType
+                  change=(action 'workerSystemDiskChange' index)
                 }}
               {{/input-or-display}}
             </div>
@@ -644,11 +690,11 @@
               {{#if (or (not nodePool.nodePoolId) isNew)}}
                 <div class="input-group">
                   {{input-integer
-                    min=20
-                    max=1024
+                    min=nodePool.minSystemDiskSize
+                    max=nodePool.maxSystemDiskSize
                     value=nodePool.systemDiskSize
                     classNames="form-control"
-                    placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                    placeholder=(t "clusterNew.tencenttke.diskSize.placeholder" min=nodePool.minSystemDiskSize max=nodePool.maxSystemDiskSize)
                   }}
                   <span class="input-group-addon bg-default">
                     {{t "generic.gigabyte"}}
@@ -673,6 +719,7 @@
                   content=nodePool.dataDiskTypes
                   localizedLabel=true
                   value=nodePool.dataDiskType
+                  change=(action 'workerDataDiskChange' index)
                 }}
               {{/input-or-display}}
             </div>
@@ -686,11 +733,12 @@
                     value=nodePool.dataDiskSize
                   }}
                     {{input-integer
-                      min=0
-                      max=32000
+                      min=nodePool.minDataDiskSize
+                      max=nodePool.maxDataDiskSize
                       value=nodePool.dataDiskSize
+                      nullable=true
                       classNames="form-control"
-                      placeholder=(t "clusterNew.tencenttke.systemDiskSize.placeholder")
+                      placeholder=(t "clusterNew.tencenttke.diskSize.placeholder" min=nodePool.minDataDiskSize max=nodePool.maxDataDiskSize)
                     }}
                   {{/input-or-display}}
                   <span class="input-group-addon bg-default">

@@ -37,7 +37,7 @@ const BAND_WIDTH = [
   }
 ];
 
-const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD', 'CLOUD_BSSD'];
+const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD', 'CLOUD_BSSD', 'CLOUD_TSSD'];
 const OS_IMAGE = [
   {
       "Alias": "CentOS 7.2 64bit",
@@ -138,7 +138,7 @@ const DEFAULT_NODE_GROUP_CONFIG = {
   dataDiskSize:   0,
   instanceNum:    1,
   bandwidth:      10,
-  bandwidthType:  'BANDWIDTH_POSTPAID_BY_HOUR',
+  bandwidthType:  'TRAFFIC_POSTPAID_BY_HOUR',
   systemDiskType: null,
   dataDiskType:   null,
   osName:         null,
@@ -228,7 +228,7 @@ export default Ember.Component.extend(ClusterDriver, {
         securityGroup:  null,
         instanceType:   null,
         osName:         'tlinux3.1x86_64',
-        bandwidthType:  'BANDWIDTH_POSTPAID_BY_HOUR',
+        bandwidthType:  'TRAFFIC_POSTPAID_BY_HOUR',
         bandwidth:      10,
         keyId:          null,
         clusterType:    'MANAGED_CLUSTER',
@@ -242,6 +242,7 @@ export default Ember.Component.extend(ClusterDriver, {
           "addonName": "CBS",
           "addonParam": "{\"kind\":\"App\",\"spec\":{\"chart\":{\"chartName\":\"cbs\",\"chartVersion\":\"1.0.9\"},\"values\":{\"values\":[],\"rawValues\":\"e30=\",\"rawValuesType\":\"json\"}}}"
         }]),
+        clusterEndpoint: true,
       });
 
       set(this, 'config', config);
@@ -336,6 +337,9 @@ export default Ember.Component.extend(ClusterDriver, {
         tkeCredentialSecret: get(this, 'primaryResource.cloudCredentialId'),
         clusterId,
         region: get(this, 'config.region'),
+        clusterEndpoint: {
+          enable: get(this, 'config.clusterEndpoint')
+        }
       }
 
       set(this, 'cluster.tkeConfig', config);
@@ -458,6 +462,24 @@ export default Ember.Component.extend(ClusterDriver, {
 
       set(this, 'nodePoolList', nodePoolList);
     },
+    masterSystemDiskChange(disk){
+      set(this.config, 'minSystemDiskSize', disk.minDiskSize);
+      set(this.config, 'maxSystemDiskSize', disk.maxDiskSize);
+    },
+
+    masterDataDiskChange(disk){
+      set(this.config, 'minDataDiskSize', disk.minDiskSize);
+      set(this.config, 'maxDataDiskSize', disk.maxDiskSize);
+    },
+    workerSystemDiskChange(idx, disk){
+      set(this.nodePoolList[idx], 'minSystemDiskSize', disk.minDiskSize);
+      set(this.nodePoolList[idx], 'maxSystemDiskSize', disk.maxDiskSize);
+    },
+
+    workerDataDiskChange(idx, disk){
+      set(this.nodePoolList[idx], 'minDataDiskSize', disk.minDiskSize);
+      set(this.nodePoolList[idx], 'maxDataDiskSize', disk.maxDiskSize);
+    },
   },
 
   languageDidChanged: observer('intl.locale', function() {
@@ -512,6 +534,7 @@ export default Ember.Component.extend(ClusterDriver, {
     });
 
     const out = {
+      clusterEndpoint: clusterEndpoint.enable === undefined ? true : !!clusterEndpoint.enable,
       imported: config.imported,
       region: config.region,
       subnetId: get(clusterEndpoint, 'subnetId'),
@@ -727,6 +750,12 @@ export default Ember.Component.extend(ClusterDriver, {
     const componentNames = components.map(item=>item.addonName);
     return componentNames.join();
   }),
+  clusterEndpointShowValue: computed('config.clusterEndpoint', 'intl.locale', function() {
+    const intl = get(this, 'intl');
+
+    return intl.t(`clusterNew.tencenttke.proxy.${get(this, 'config.clusterEndpoint') ? 'outer' : 'inner'}`);
+  }),
+  
 
   nodePoollInstanceTypeChange: observer('nodePoolList.@each.{instanceType}', 'diskList', function(){
     const nodePoolList = get(this, 'nodePoolList') || [];
@@ -739,6 +768,11 @@ export default Ember.Component.extend(ClusterDriver, {
         set(item, 'dataDiskTypes', disk.dataDiskTypes);
         set(item, 'systemDiskType', this.getDefaultSelected(disk.systemDiskTypes));
         set(item, 'dataDiskType', this.getDefaultSelected(disk.dataDiskTypes));
+
+        set(item, 'minSystemDiskSize', disk.systemDiskTypes[0].minDiskSize);
+        set(item, 'maxSystemDiskSize', disk.systemDiskTypes[0].maxDiskSize);
+        set(item, 'minDataDiskSize', disk.dataDiskTypes[0].minDiskSize);
+        set(item, 'maxDataDiskSize', disk.dataDiskTypes[0].maxDiskSize);
       }
     })
   }),
@@ -753,6 +787,8 @@ export default Ember.Component.extend(ClusterDriver, {
       set(this, 'dataDiskChoices', disk.dataDiskTypes);
       set(this, 'config.systemDiskType', this.getDefaultSelected(disk.systemDiskTypes));
       set(this, 'config.dataDiskType', this.getDefaultSelected(disk.dataDiskTypes));
+      this.send('masterSystemDiskChange', disk.systemDiskTypes[0])
+      this.send('masterDataDiskChange', disk.dataDiskTypes[0])
     }
   }),
 
@@ -1070,20 +1106,21 @@ export default Ember.Component.extend(ClusterDriver, {
     const systemDiskTypes = {};
     const dataDiskTypes = {};
     const unsupportedDiskType = {};
+    const zone = get(this, 'config.zoneId');
 
     currentDisk.forEach(d=>{
       if(!DISKS.includes(d.DiskType)){
         unsupportedDiskType[d.DiskType] = true;
         return;
       }
-      if(d.DiskUsage === DATA_DISK && !dataDiskTypes[d.DiskType]){
+      if(d.DiskUsage === DATA_DISK && d.Zone === zone && !dataDiskTypes[d.DiskType]){
         dataDiskTypes[d.DiskType] = {
           label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
           value:       d.DiskType,
           maxDiskSize: d.MaxDiskSize,
           minDiskSize: d.MinDiskSize,
         }
-      } else if (d.DiskUsage === SYSTEM_DISK  && !systemDiskTypes[d.DiskType]){
+      } else if (d.DiskUsage === SYSTEM_DISK && d.Zone === zone  && !systemDiskTypes[d.DiskType]){
         systemDiskTypes[d.DiskType] = {
           label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
           value:       d.DiskType,
@@ -1206,7 +1243,7 @@ export default Ember.Component.extend(ClusterDriver, {
     });
 
     const clusterEndpoint = {
-      enable: true,
+      enable: config.clusterEndpoint,
       subnetId: config.subnetId,
       securityGroup: config.securityGroup,
     }

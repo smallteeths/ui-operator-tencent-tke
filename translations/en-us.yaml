@@ -46,7 +46,7 @@ clusterNew:
       required: Worker Nodes is required
     ecsCount:
       label: Number of ECS
-      placeholder: '1-500'
+      placeholder: '3-500'
     nodeGroups:
       addLabel: Add Node Group
       detail: Customize managed node groups.
@@ -83,16 +83,17 @@ clusterNew:
       CLOUD_PREMIUM: Cloud Premium
       CLOUD_SSD: Cloud SSD
       CLOUD_BSSD: CLOUD BSSD
+      CLOUD_TSSD: CLOUD TSSD
+    diskSize:
+      placeholder: Range：{min}～{max}
     systemDiskSize:
       label: Root Disk Size
-      placeholder: e.g. 25
     systemDiskType:
       label: Root Disk Type
     dataDiskType:
       label: Data Disk Type
     dataDiskSize:
       label: Data Disk Size
-      placeholder: e.g. 10
     bandwidth:
       label: Band Width
       placeholder: e.g. 10
@@ -160,3 +161,8 @@ clusterNew:
       eu-moscow: Moscow
       ap-jakarta: Jakarta
       sa-saopaulo: Saopaulo
+    proxy:
+      label: Access cluster APIServer
+      inner: Inner Net
+      outer: Outer Net
+      info: It is necessary to ensure that the cluster to be imported has the cluster access agent enabled and the security group used has opened port 443.
