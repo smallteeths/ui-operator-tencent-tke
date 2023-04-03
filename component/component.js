@@ -191,7 +191,6 @@ export default Ember.Component.extend(ClusterDriver, {
   systemDiskChoices:   [],
   dataDiskChoices:     [],
   zoneChoices:         [],
-  containerChoices:    CONTAINER,
   loadedRegionFor:     '',
 
   cloudCredentialDriverName: 'tencent',
@@ -649,6 +648,18 @@ export default Ember.Component.extend(ClusterDriver, {
   }),
   selectedCloudCredential: computed('primaryResource.cloudCredentialId', 'model.cloudCredentials.length', function() {
     return get(this, 'model.cloudCredentials').findBy('id', get(this, 'primaryResource.cloudCredentialId'))
+  }),
+
+  containerChoices: computed('config.clusterVersion', function() {
+    const version = get(this, 'config.clusterVersion');
+    const vers = version.split('.');
+
+    if(vers[0]>1 || vers[1]>=24){
+      set(this, 'config.container', 'containerd')
+
+      return CONTAINER.filter(item=>item.value !== 'docker');
+    }
+    return CONTAINER;
   }),
 
   subnetChoices: computed('allSubnets', 'config.vpcId', 'config.zoneId', 'vpcChoices.[]', function() {
