@@ -934,7 +934,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
   fetchVersions() {
     return this.queryFromTencent('versions').then((res) => {
-      const versionRange = ['1.23', '1.24', '1.25'];
+      const versionRange = ['1.23', '1.24', '1.25', '1.26'];
       const versions = get(res, 'VersionInstanceSet').map((key) => {
         const enabled = versionRange.find(v=>{
           return key.Version.startsWith(`${v}.`);
