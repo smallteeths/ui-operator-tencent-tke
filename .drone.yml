@@ -9,7 +9,7 @@ platform:
 
 steps:
   - name: build
-    image: node
+    image: node:16.13.1
     commands:
       - yarn install
       - yarn run build
