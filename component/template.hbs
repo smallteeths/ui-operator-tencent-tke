@@ -727,11 +727,8 @@
               <label class="acc-label">
                 {{t "clusterNew.tencenttke.dataDiskSize.label"}}
               </label>
-                <div class="input-group">
-                  {{#input-or-display
-                    editable=(or (not nodePool.nodePoolId) isNew)
-                    value=nodePool.dataDiskSize
-                  }}
+                {{#if (or (not nodePool.nodePoolId) isNew)}}
+                  <div class="input-group">
                     {{input-integer
                       min=nodePool.minDataDiskSize
                       max=nodePool.maxDataDiskSize
@@ -740,11 +737,13 @@
                       classNames="form-control"
                       placeholder=(t "clusterNew.tencenttke.diskSize.placeholder" min=nodePool.minDataDiskSize max=nodePool.maxDataDiskSize)
                     }}
-                  {{/input-or-display}}
-                  <span class="input-group-addon bg-default">
-                    {{t "generic.gigabyte"}}
-                  </span>
-                </div>
+                    <span class="input-group-addon bg-default">
+                      {{t "generic.gigabyte"}}
+                    </span>
+                  </div>
+                {{else}}
+                  <div>{{nodePool.dataDiskSize}} {{t "generic.gigabyte"}}</div>
+                {{/if}}
             </div>
           </div>
           <div class="row">
