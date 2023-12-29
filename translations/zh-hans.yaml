@@ -82,8 +82,9 @@ clusterNew:
       CLOUD_BASIC: 普通云硬盘
       CLOUD_PREMIUM: 高性能云硬盘
       CLOUD_SSD: SSD云硬盘
-      CLOUD_BSSD: 通用性SSD云硬盘
+      CLOUD_BSSD: 通用型SSD云硬盘
       CLOUD_TSSD: TSSD 云硬盘
+      CLOUD_HSSD: 增强型SSD云硬盘
     diskSize:
       placeholder: 范围：{min}～{max}
     systemDiskSize:
