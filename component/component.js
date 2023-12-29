@@ -157,6 +157,57 @@ const CONTAINER = [{
   value: 'containerd',
 }]
 
+const CURRENTDISK = [
+  {
+    DiskType: "CLOUD_BASIC",
+    DiskUsage: "DATA_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_PREMIUM",
+    DiskUsage: "DATA_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_SSD",
+    DiskUsage: "DATA_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_HSSD",
+    DiskUsage: "DATA_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_BASIC",
+    DiskUsage: "SYSTEM_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_PREMIUM",
+    DiskUsage: "SYSTEM_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_SSD",
+    DiskUsage: "SYSTEM_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+  {
+    DiskType: "CLOUD_HSSD",
+    DiskUsage: "SYSTEM_DISK",
+    MaxDiskSize: 32000,
+    MinDiskSize: 20
+  },
+]
+
 /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
 export default Ember.Component.extend(ClusterDriver, {
   driverName:  '%%DRIVERNAME%%',
@@ -508,8 +559,7 @@ export default Ember.Component.extend(ClusterDriver, {
         instanceType: launchConfigurePara.instanceType,
         systemDiskSize: get(launchConfigurePara, 'systemDisk.diskSize'),
         systemDiskType: get(launchConfigurePara, 'systemDisk.diskType'),
-        dataDiskSize: get(launchConfigurePara, 'dataDisks.diskSize'),
-        dataDiskType: get(launchConfigurePara, 'dataDisks.diskType'),
+        dataDisks: get(launchConfigurePara, 'dataDisks'),
         bandwidthType: launchConfigurePara.internetChargeType,
         bandwidth: launchConfigurePara.internetMaxBandwidthOut,
         keyPair: launchConfigurePara.keyIds[0],
@@ -522,7 +572,8 @@ export default Ember.Component.extend(ClusterDriver, {
         displayShowValue = {
           displayInstanceType: obj.instanceType,
           displaySystemDiskType: intl.t(`clusterNew.tencenttke.disk.${obj.systemDiskType}`),
-          displayDataDiskType: obj.dataDiskType ? intl.t(`clusterNew.tencenttke.disk.${obj.dataDiskType}`) : null,
+          displayDataDiskType: obj.dataDisks && obj.dataDisks.length > 0 ? intl.t(`clusterNew.tencenttke.disk.${obj.dataDisks[0].diskType}`) : null,
+          dataDiskSize: obj.dataDisks && obj.dataDisks.length > 0 ? obj.dataDisks[0].diskSize : null,
           displayBandwidthType: intl.t(this.configNameDisplay(obj.bandwidthType, get(this, 'bandWidthChoices'))),
           securityGroup: obj.securityGroup,
           displayOsName: obj.osName,
@@ -741,7 +792,7 @@ export default Ember.Component.extend(ClusterDriver, {
     return this.configNameDisplay(get(this, 'config.instanceType'), get(this, 'instanceChoices'));
   }),
   dataDiskTypeShowValue: computed('dataDiskChoices.[]', 'config.dataDiskType', 'intl.locale', function() {
-    return this.configNameDisplay(get(this, 'config.systemDiskType'), get(this, 'dataDiskChoices'), true);
+    return this.configNameDisplay(get(this, 'config.dataDiskType'), get(this, 'dataDiskChoices'), true);
   }),
   systemDiskTypeShowValue: computed('systemDiskChoices.[]', 'config.systemDiskType', 'intl.locale', function() {
     return this.configNameDisplay(get(this, 'config.systemDiskType'), get(this, 'systemDiskChoices'), true);
@@ -772,8 +823,7 @@ export default Ember.Component.extend(ClusterDriver, {
     const nodePoolList = get(this, 'nodePoolList') || [];
 
     nodePoolList.forEach(item=>{
-      const instanceType = get(item, 'instanceType');
-      const disk = this.getDiskChoices(instanceType);
+      const disk = this.getDiskChoices();
       if(disk){
         set(item, 'systemDiskTypes', disk.systemDiskTypes);
         set(item, 'dataDiskTypes', disk.dataDiskTypes);
@@ -791,8 +841,7 @@ export default Ember.Component.extend(ClusterDriver, {
     if(get(this, 'config.clusterType') !== 'INDEPENDENT_CLUSTER'){
       return;
     }
-    const instanceType = get(this, 'config.instanceType');
-    const disk = this.getDiskChoices(instanceType);
+    const disk = this.getDiskChoices();
     if(disk){
       set(this, 'systemDiskChoices', disk.systemDiskTypes);
       set(this, 'dataDiskChoices', disk.dataDiskTypes);
@@ -1098,40 +1147,20 @@ export default Ember.Component.extend(ClusterDriver, {
     });
   },
 
-  getDiskChoices(instanceType) {
-    const instanceChoices = get(this, 'instanceChoices') || {};
-    const selected = instanceChoices.findBy('value', instanceType);
-
-    if(!selected){
-      return;
-    }
-
-    const instanceFamily = get(selected, 'group') || '';
-    const { diskList = {} } = this;
-    const currentDisk = instanceFamily ? get(diskList, instanceFamily) : [];
-
-    if(!currentDisk){
-      return;
-    }
-
+  getDiskChoices() {
     const systemDiskTypes = {};
     const dataDiskTypes = {};
-    const unsupportedDiskType = {};
-    const zone = get(this, 'config.zoneId');
 
-    currentDisk.forEach(d=>{
-      if(!DISKS.includes(d.DiskType)){
-        unsupportedDiskType[d.DiskType] = true;
-        return;
-      }
-      if(d.DiskUsage === DATA_DISK && d.Zone === zone && !dataDiskTypes[d.DiskType]){
+    CURRENTDISK.forEach(d=>{
+      if(d.DiskUsage === DATA_DISK) {
         dataDiskTypes[d.DiskType] = {
           label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
           value:       d.DiskType,
           maxDiskSize: d.MaxDiskSize,
           minDiskSize: d.MinDiskSize,
         }
-      } else if (d.DiskUsage === SYSTEM_DISK && d.Zone === zone  && !systemDiskTypes[d.DiskType]){
+      }
+      if (d.DiskUsage === SYSTEM_DISK) {
         systemDiskTypes[d.DiskType] = {
           label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
           value:       d.DiskType,
@@ -1140,8 +1169,6 @@ export default Ember.Component.extend(ClusterDriver, {
         }
       }
     });
-
-    console.warn('Unsupported disk type:', JSON.stringify(Object.keys(unsupportedDiskType)));
 
     return {
       systemDiskTypes: Object.values(systemDiskTypes),

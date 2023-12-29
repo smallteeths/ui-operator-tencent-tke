@@ -84,6 +84,7 @@ clusterNew:
       CLOUD_SSD: Cloud SSD
       CLOUD_BSSD: CLOUD BSSD
       CLOUD_TSSD: CLOUD TSSD
+      CLOUD_HSSD: CLOUD HSSD
     diskSize:
       placeholder: Range：{min}～{max}
     systemDiskSize:
